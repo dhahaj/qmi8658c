@@ -1,0 +1,46 @@
+# Example device config using the QMI8658C component.
+
+esphome:
+  name: qmi8658c-demo
+
+esp32:
+  variant: esp32s3
+  framework:
+    type: esp-idf   # this driver is pure ESPHome/i2c, works on arduino too
+
+logger:
+api:
+ota:
+  platform: esphome
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [qmi8658c]
+
+i2c:
+  sda: GPIO11      # match your board (Waveshare S3 Matrix = 11/12)
+  scl: GPIO12
+  frequency: 400kHz
+
+sensor:
+  - platform: qmi8658c
+    address: 0x6B            # 0x6B if SA0 tied low; 0x6A if floating/high
+    update_interval: 1s
+    acceleration_range: 4G
+    gyroscope_range: 256DPS
+    acceleration_x:
+      name: "QMI8658C Accel X"
+    acceleration_y:
+      name: "QMI8658C Accel Y"
+    acceleration_z:
+      name: "QMI8658C Accel Z"
+    gyroscope_x:
+      name: "QMI8658C Gyro X"
+    gyroscope_y:
+      name: "QMI8658C Gyro Y"
+    gyroscope_z:
+      name: "QMI8658C Gyro Z"
+    temperature:
+      name: "QMI8658C Die Temp"
