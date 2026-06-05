@@ -78,4 +78,4 @@ sensor:
 
 ## Authors & Maintainers
 
-- [@daniel](https://github.com/daniel)
+- [@dhahaj](https://github.com/dhahaj)
