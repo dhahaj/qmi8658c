@@ -22,7 +22,21 @@ void QMI8658CComponent::setup() {
   // 1.75 s per datasheet, but that is only required out of a true power-down;
   // a short settle is fine here and keeps setup() non-blocking.)
   this->write_byte(QMI8658C_REG_RESET, 0xB0);
-  delay(15);
+  delay(50);
+
+  // Re-verify the device is back on the bus after reset; a too-short settle here
+  // leaves it NACKing data reads ("I2C software timeout") forever.
+  uint8_t who_after = 0;
+  for (int i = 0; i < 20; i++) {           // up to ~200 ms
+    if (this->read_byte(QMI8658C_REG_WHO_AM_I, &who_after) && who_after == 0x05)
+      break;
+    delay(10);
+  }
+  if (who_after != 0x05) {
+    ESP_LOGE(TAG, "Device did not return after soft reset (got 0x%02X)", who_after);
+    this->mark_failed();
+    return;
+  }
 
   // Auto-increment register reads so a single burst grabs all axes.
   this->write_byte(QMI8658C_REG_CTRL1, QMI8658C_CTRL1_VALUE);
