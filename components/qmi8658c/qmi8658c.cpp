@@ -72,6 +72,12 @@ void QMI8658CComponent::setup() {
 }
 
 void QMI8658CComponent::update() {
+  // --- TEMP DIAGNOSTIC: single-byte probes to isolate the timeout ---
+  uint8_t who = 0xFF, st = 0xFF;
+  bool who_ok = this->read_byte(QMI8658C_REG_WHO_AM_I, &who);
+  bool st_ok = this->read_byte(QMI8658C_REG_STATUS0, &st);
+  ESP_LOGW(TAG, "probe: WHO_AM_I ok=%d val=0x%02X | STATUS0 ok=%d val=0x%02X", who_ok, who, st_ok, st);
+
   // 12 contiguous bytes: AX_L AX_H AY_L AY_H AZ_L AZ_H GX_L GX_H GY_L GY_H GZ_L GZ_H
   uint8_t b[12];
   if (!this->read_bytes(QMI8658C_REG_AX_L, b, 12)) {
